@@ -10,9 +10,9 @@ def pytest_addoption(parser):
                      default=False, help='run pydocstyle')
     parser.addini('docstyle_convention', default='pep257',
                   help='choose the basic list of error codes to be checked (default: pep257)')
-    parser.addini('docstyle_add_select', type='linelist',
+    parser.addini('docstyle_add_select', type='args',
                   help='add error codes')
-    parser.addini('docstyle_add_ignore', type='linelist',
+    parser.addini('docstyle_add_ignore', type='args',
                   help='ignore error codes')
 
 
