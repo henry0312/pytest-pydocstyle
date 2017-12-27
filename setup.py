@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='pytest-docstyle',
-    version='1.1.0',
+    version='1.2.0',
     description='pytest plugin to run pydocstyle',
     url='https://github.com/henry0312/pytest-docstyle',
     author='Tsukasa OMOTO',

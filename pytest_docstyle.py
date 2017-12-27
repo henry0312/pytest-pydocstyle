@@ -1,3 +1,4 @@
+import re
 import logging
 
 import pydocstyle
@@ -8,17 +9,25 @@ def pytest_addoption(parser):
     group = parser.getgroup('docstyle')
     group.addoption('--docstyle', action='store_true',
                      default=False, help='run pydocstyle')
+
+    # https://github.com/PyCQA/pydocstyle/blob/2.1.1/src/pydocstyle/config.py#L69
+    DEFAULT_MATCH_RE = pydocstyle.config.ConfigurationParser.DEFAULT_MATCH_RE + '$'
+
     parser.addini('docstyle_convention', default='pep257',
                   help='choose the basic list of error codes to be checked (default: pep257)')
     parser.addini('docstyle_add_select', type='args',
                   help='add error codes')
     parser.addini('docstyle_add_ignore', type='args',
                   help='ignore error codes')
+    parser.addini('docstyle_match', default=DEFAULT_MATCH_RE,
+                  help=f"check only files that exactly match regular expression (default: {DEFAULT_MATCH_RE})")
 
 
 def pytest_collect_file(parent, path):
     config = parent.config
-    if config.option.docstyle and path.ext == '.py':
+    if config.option.docstyle and path.ext == '.py' \
+            # https://github.com/PyCQA/pydocstyle/blob/2.1.1/src/pydocstyle/config.py#L163
+            and re.match(config.getini('docstyle_match'), path.basename):
         return Item(path, parent)
 
 
