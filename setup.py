@@ -12,7 +12,7 @@ setup(
     py_modules=['pytest_docstyle'],
     python_requires='>=3.6,<4',
     install_requires=[
-        'pytest>=3.3,<3.4',
+        'pytest>=3.0,<4',
         'pydocstyle>=2.1,<2.2',
     ],
     # https://docs.pytest.org/en/latest/writing_plugins.html#making-your-plugin-installable-by-others
