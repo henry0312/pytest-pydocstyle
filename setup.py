@@ -1,6 +1,5 @@
 from setuptools import setup
 
-
 setup(
     name='pytest-docstyle',
     version='1.2.1',
@@ -16,7 +15,7 @@ setup(
         'pydocstyle>=2.1,<2.2',
     ],
     # https://docs.pytest.org/en/latest/writing_plugins.html#making-your-plugin-installable-by-others
-    entry_points = {
+    entry_points={
         'pytest11': [
             'docstyle = pytest_docstyle',
         ]
