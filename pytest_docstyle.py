@@ -8,7 +8,7 @@ import pytest
 def pytest_addoption(parser):
     group = parser.getgroup('docstyle')
     group.addoption('--docstyle', action='store_true',
-                     default=False, help='run pydocstyle')
+                    default=False, help='run pydocstyle')
 
     # https://github.com/PyCQA/pydocstyle/blob/2.1.1/src/pydocstyle/config.py#L69
     DEFAULT_MATCH_RE = pydocstyle.config.ConfigurationParser.DEFAULT_MATCH_RE + '$'
@@ -76,4 +76,3 @@ class Item(pytest.Item, pytest.File):
 
 class DocStyleError(Exception):
     """custom exception for error reporting."""
-
