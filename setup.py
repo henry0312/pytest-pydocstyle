@@ -13,6 +13,8 @@ setup(
     install_requires=[
         'pytest>=3.0,<4',
         'pydocstyle>=2.1,<2.2',
+        'pytest-codestyle>=1.0,<2.0',
+        'pytest-isort>=0.1,<1.0',
     ],
     # https://docs.pytest.org/en/latest/writing_plugins.html#making-your-plugin-installable-by-others
     entry_points={
