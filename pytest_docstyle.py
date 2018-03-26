@@ -21,7 +21,7 @@ def pytest_addoption(parser):
                   help='ignore error codes')
     parser.addini('docstyle_match', default=DEFAULT_MATCH_RE,
                   help='check only files that exactly match'
-                       'regular expression (default: {pattern})'.format(
+                       ' regular expression (default: {pattern})'.format(
                            pattern=DEFAULT_MATCH_RE))
 
 
