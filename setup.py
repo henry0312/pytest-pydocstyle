@@ -10,7 +10,7 @@ else:
 for name in packages:
     setup(
         name=name,
-        version='1.2.2',
+        version='1.3.0',
         description='pytest plugin to run pydocstyle',
         url='https://github.com/henry0312/pytest-docstyle',
         author='Tsukasa OMOTO',
