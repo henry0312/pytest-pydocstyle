@@ -1,13 +1,13 @@
-# pytest-docstyle
+# pytest-pydocstyle
 
-[![PyPI version](https://badge.fury.io/py/pytest-docstyle.svg)](https://pypi.org/project/pytest-docstyle/)
+[![PyPI version](https://badge.fury.io/py/pytest-pydocstyle.svg)](https://pypi.org/project/pytest-pydocstyle/)
 
 [pytest](https://docs.pytest.org/en/latest/) plugin to run [pydocstyle](https://github.com/PyCQA/pydocstyle)
 
 ## Installation
 
 ```sh
-pip install pytest-docstyle
+pip install pytest-pydocstyle
 ```
 
 ## Usage
