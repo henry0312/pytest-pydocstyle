@@ -2,10 +2,14 @@ import os
 
 from setuptools import setup
 
+version = open('VERSION').read().strip()
+long_description = open('README.md').read()
+
 setup(
     name='pytest-docstyle',
-    version='1.3.0',
+    version=version,
     description='pytest plugin to run pydocstyle',
+    long_description=long_description,
     url='https://github.com/henry0312/pytest-docstyle',
     author='Tsukasa OMOTO',
     author_email='henry0312@gmail.com',
