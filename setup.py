@@ -6,7 +6,7 @@ version = open('VERSION', 'rb').read().decode('utf-8').strip()
 long_description = open('README.md', 'rb').read().decode('utf-8')
 
 setup(
-    name='pytest-docstyle',
+    name='pytest-pydocstyle',
     version=version,
     description='pytest plugin to run pydocstyle',
     long_description=long_description,
