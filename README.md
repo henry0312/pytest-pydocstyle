@@ -1,6 +1,6 @@
 # pytest-docstyle
 
-[![PyPI version](https://badge.fury.io/py/pytest-docstyle.svg)](https://badge.fury.io/py/pytest-docstyle)
+[![PyPI version](https://badge.fury.io/py/pytest-docstyle.svg)](https://pypi.org/project/pytest-docstyle/)
 
 [pytest](https://docs.pytest.org/en/latest/) plugin to run [pydocstyle](https://github.com/PyCQA/pydocstyle)
 
