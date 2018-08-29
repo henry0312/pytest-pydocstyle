@@ -2,8 +2,8 @@ import os
 
 from setuptools import setup
 
-version = open('VERSION').read().strip()
-long_description = open('README.md').read()
+version = open('VERSION', 'rb').read().decode('utf-8').strip()
+long_description = open('README.md', 'rb').read().decode('utf-8')
 
 setup(
     name='pytest-docstyle',
