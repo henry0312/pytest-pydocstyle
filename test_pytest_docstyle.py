@@ -33,6 +33,7 @@ def test_ini(testdir):
         docstyle_add_select = a b c
         docstyle_add_ignore = d e f
         docstyle_match = test_re
+        docstyle_exclude = exclude.py path/to/another/exclude.py
     """)
     p = testdir.makepyfile("""
         def test_ini(request):
@@ -43,7 +44,9 @@ def test_ini(testdir):
             assert config.getini('docstyle_add_ignore') == ignore
             match = 'test_re'
             assert config.getini('docstyle_match') == match
-    """)
+            exclude = ['{dirname}/{base}/exclude.py', '{dirname}/{base}/path/to/another/exclude.py']
+            assert config.getini('docstyle_exclude') == exclude
+    """.format(dirname=testdir.tmpdir.dirname, base=testdir.tmpdir.basename))
     p = p.write(p.read() + "\n")
     result = testdir.runpytest('--docstyle')
     result.assert_outcomes(passed=1)
@@ -56,6 +59,18 @@ def test_pytest_collect_file(testdir):
     testdir.tmpdir.ensure('test_d.py')
     result = testdir.runpytest('--docstyle')
     result.assert_outcomes(failed=2)
+
+
+def test_pytest_collect_file_with_exclude(testdir):
+    testdir.makeini("""
+        [pytest]
+        docstyle_exclude = a.py path/to/c.py
+    """)
+    testdir.tmpdir.ensure('a.py')
+    testdir.tmpdir.ensure('b.py')
+    testdir.tmpdir.ensure('path/to/c.py')
+    result = testdir.runpytest('--docstyle')
+    result.assert_outcomes(failed=1)
 
 
 def test_cache(testdir):
