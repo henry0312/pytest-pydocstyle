@@ -24,7 +24,7 @@ def pytest_addoption(parser):
                   help='check only files that exactly match'
                        ' regular expression (default: {pattern})'.format(
                            pattern=DEFAULT_MATCH_RE))
-    parser.addini('docstyle_exclude', type="pathlist",
+    parser.addini('docstyle_exclude', type="args",
                   help='source files to be excluded from codestyle')
 
 
@@ -32,9 +32,9 @@ def pytest_collect_file(parent, path):
     config = parent.config
     if (config.getoption('docstyle') and path.ext == '.py' \
             # https://github.com/PyCQA/pydocstyle/blob/2.1.1/src/pydocstyle/config.py#L163
-            and re.match(config.getini('docstyle_match'), path.basename)
-            and path not in config.getini('docstyle_exclude')):
-        return Item(path, parent)
+            and re.match(config.getini('docstyle_match'), path.basename)):
+        if not any(path.fnmatch(pattern) for pattern in config.getini('docstyle_exclude')):
+            return Item(path, parent)
 
 
 class Item(pytest.Item, pytest.File):

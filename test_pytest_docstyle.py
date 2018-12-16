@@ -44,9 +44,9 @@ def test_ini(testdir):
             assert config.getini('docstyle_add_ignore') == ignore
             match = 'test_re'
             assert config.getini('docstyle_match') == match
-            exclude = ['{dirname}/{base}/exclude.py', '{dirname}/{base}/path/to/another/exclude.py']
+            exclude = ['exclude.py', 'path/to/another/exclude.py']
             assert config.getini('docstyle_exclude') == exclude
-    """.format(dirname=testdir.tmpdir.dirname, base=testdir.tmpdir.basename))
+    """)
     p = p.write(p.read() + "\n")
     result = testdir.runpytest('--docstyle')
     result.assert_outcomes(passed=1)
@@ -64,13 +64,14 @@ def test_pytest_collect_file(testdir):
 def test_pytest_collect_file_with_exclude(testdir):
     testdir.makeini("""
         [pytest]
-        docstyle_exclude = a.py path/to/c.py
+        docstyle_exclude = a.py path/**/?.py
     """)
     testdir.tmpdir.ensure('a.py')
     testdir.tmpdir.ensure('b.py')
     testdir.tmpdir.ensure('path/to/c.py')
+    testdir.tmpdir.ensure('path/to/hoge/foo.py')
     result = testdir.runpytest('--docstyle')
-    result.assert_outcomes(failed=1)
+    result.assert_outcomes(failed=2)
 
 
 def test_cache(testdir):
