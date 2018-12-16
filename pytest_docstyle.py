@@ -28,6 +28,10 @@ def pytest_addoption(parser):
                   help='source files to be excluded from codestyle')
 
 
+def pytest_configure(config):
+    config.addinivalue_line('markers', 'docstyle: mark tests to be checked by pydocstyle.')
+
+
 def pytest_collect_file(parent, path):
     config = parent.config
     if (config.getoption('docstyle') and path.ext == '.py' \
