@@ -1,6 +1,6 @@
 import pytest_docstyle
 
-# https://docs.pytest.org/en/latest/writing_plugins.html#testing-plugins
+# https://docs.pytest.org/en/5.2.2/writing_plugins.html#testing-plugins
 pytest_plugins = ["pytester"]
 
 
@@ -101,6 +101,19 @@ def test_strict(testdir):
     p = p.write(p.read() + "\n")
     result = testdir.runpytest('--strict', '--docstyle')
     result.assert_outcomes(passed=1)
+
+
+def test_nodeid(testdir):
+    p = testdir.makepyfile(nodeid='''
+        """Test _nodeid."""
+        def test_nodeid():
+            """Test."""
+            pass
+    ''')
+    p = p.write(p.read() + "\n")
+    result = testdir.runpytest('-m', 'docstyle', '--docstyle', '-v')
+    result.assert_outcomes(passed=1)
+    result.stdout.fnmatch_lines(['nodeid.py::DOCSTYLE PASSED *'])
 
 
 class TestItem(object):
