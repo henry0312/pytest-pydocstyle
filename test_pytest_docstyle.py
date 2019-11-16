@@ -91,6 +91,23 @@ def test_cache(testdir):
     result.assert_outcomes(skipped=1, failed=1)
 
 
+def test_no_cacheprovider(testdir):
+    # D100: Missing docstring in public module
+    testdir.tmpdir.ensure('a.py')
+    p = testdir.makepyfile(b='''\
+        """Test."""
+        def hello():
+            """Print hello."""
+            print('hello')
+    ''')
+    # first run
+    result = testdir.runpytest('--docstyle', '-p', 'no:cacheprovider')
+    result.assert_outcomes(passed=1, failed=1)
+    # second run
+    result = testdir.runpytest('--docstyle', '-p', 'no:cacheprovider')
+    result.assert_outcomes(passed=1, failed=1)
+
+
 def test_strict(testdir):
     p = testdir.makepyfile(a='''
         """Test strict."""
