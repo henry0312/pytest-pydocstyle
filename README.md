@@ -20,15 +20,18 @@ For detail, please see `pytest -h` after installation.
 
 ## Configuration
 
-You can configure options of pydocstyle with `setup.cfg` (or `pytest.ini`).  
-(cf. [Configuration — pytest documentation](https://docs.pytest.org/en/latest/customize.html))
+The behavior can be configured in the same style of pydocstyle.  
+(cf. [Configuration — pytest documentation](https://docs.pytest.org/en/latest/customize.html) and [Configuration Files — pydocstyle documentation](http://www.pydocstyle.org/en/latest/usage.html#configuration-files))
 
 For example,
 
 ```
+[pydocstyle]
+convention = numpy
+add-ignore = D400,D403
+
 [tool:pytest]
-docstyle_convention = numpy
-docstyle_add_ignore = D400 D403
+addopts = --docstyle
 ```
 
 ## Licence
