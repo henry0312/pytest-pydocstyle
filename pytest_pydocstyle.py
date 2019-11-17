@@ -7,13 +7,13 @@ import pytest
 
 
 def pytest_addoption(parser):
-    group = parser.getgroup('docstyle')
-    group.addoption('--docstyle', action='store_true',
+    group = parser.getgroup('pydocstyle')
+    group.addoption('--pydocstyle', action='store_true',
                     default=False, help='run pydocstyle')
 
 
 def pytest_configure(config):
-    config.addinivalue_line('markers', 'docstyle: mark tests to be checked by pydocstyle.')
+    config.addinivalue_line('markers', 'pydocstyle: mark tests to be checked by pydocstyle.')
 
 
 # https://github.com/palantir/python-language-server/blob/0.30.0/pyls/plugins/pydocstyle_lint.py#L110
@@ -33,7 +33,7 @@ def _patch_sys_argv(arguments):
 
 def pytest_collect_file(parent, path):
     config = parent.config
-    if config.getoption('docstyle') and path.ext == '.py':
+    if config.getoption('pydocstyle') and path.ext == '.py':
         parser = pydocstyle.config.ConfigurationParser()
         args = [str(path.basename)]
         with _patch_sys_argv(args):
@@ -43,16 +43,16 @@ def pytest_collect_file(parent, path):
 
 
 class Item(pytest.Item, pytest.File):
-    CACHE_KEY = 'docstyle/mtimes'
+    CACHE_KEY = 'pydocstyle/mtimes'
 
     def __init__(self, path, parent, parser):
         super().__init__(path, parent)
-        self.add_marker('docstyle')
+        self.add_marker('pydocstyle')
         self.parser = parser
         # https://github.com/pytest-dev/pytest/blob/92d6a0500b9f528a9adcd6bbcda46ebf9b6baf03/src/_pytest/nodes.py#L380
         # https://github.com/pytest-dev/pytest/blob/92d6a0500b9f528a9adcd6bbcda46ebf9b6baf03/src/_pytest/nodes.py#L101
         # https://github.com/moccu/pytest-isort/blob/44f345560a6125277f7432eaf26a3488c0d39177/pytest_isort.py#L142
-        self._nodeid += '::DOCSTYLE'
+        self._nodeid += '::PYDOCSTYLE'
 
     def setup(self):
         if not hasattr(self.config, 'cache'):
@@ -71,7 +71,7 @@ class Item(pytest.Item, pytest.File):
             errors = [str(error) for error in pydocstyle.check((str(self.fspath),), select=checked_codes,
                                                                ignore_decorators=ignore_decorators)]
         if errors:
-            raise DocStyleError('\n'.join(errors))
+            raise PyDocStyleError('\n'.join(errors))
         elif hasattr(self.config, 'cache'):
             # update cache
             # http://pythonhosted.org/pytest-cache/api.html
@@ -80,7 +80,7 @@ class Item(pytest.Item, pytest.File):
             self.config.cache.set(self.CACHE_KEY, cache)
 
     def repr_failure(self, excinfo):
-        if excinfo.errisinstance(DocStyleError):
+        if excinfo.errisinstance(PyDocStyleError):
             return excinfo.value.args[0]
         else:
             return super().repr_failure(excinfo)
@@ -91,5 +91,5 @@ class Item(pytest.Item, pytest.File):
         return self.fspath, None, 'pydocstyle-check'
 
 
-class DocStyleError(Exception):
+class PyDocStyleError(Exception):
     """custom exception for error reporting."""

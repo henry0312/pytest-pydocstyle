@@ -13,7 +13,7 @@ pip install pytest-docstyle
 ## Usage
 
 ```sh
-pytest --docstyle ...
+pytest --pydocstyle ...
 ```
 
 For detail, please see `pytest -h` after installation.
@@ -31,7 +31,7 @@ convention = numpy
 add-ignore = D400,D403
 
 [tool:pytest]
-addopts = --docstyle
+addopts = --pydocstyle
 ```
 
 ## Licence

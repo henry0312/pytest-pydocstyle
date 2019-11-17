@@ -15,7 +15,7 @@ setup(
     author='OMOTO Tsukasa',
     author_email='tsukasa@oomo.to',
     license='MIT',
-    py_modules=['pytest_docstyle'],
+    py_modules=['pytest_pydocstyle'],
     python_requires='~=3.5',
     install_requires=[
         'pytest',
@@ -30,7 +30,7 @@ setup(
     # https://docs.pytest.org/en/latest/writing_plugins.html#making-your-plugin-installable-by-others
     entry_points={
         'pytest11': [
-            'docstyle = pytest_docstyle',
+            'pydocstyle = pytest_pydocstyle',
         ]
     },
     classifiers=[
