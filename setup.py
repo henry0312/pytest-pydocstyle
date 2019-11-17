@@ -23,7 +23,7 @@ setup(
     ],
     extras_require={
         'tests': [
-            'pytest-codestyle~=1.4',
+            'pytest-codestyle~=2.0',
             'pytest-isort',
         ],
     },
