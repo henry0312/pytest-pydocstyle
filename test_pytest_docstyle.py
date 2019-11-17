@@ -28,25 +28,15 @@ def test_option_true(testdir):
 
 def test_ini(testdir):
     testdir.makeini("""
-        [pytest]
-        docstyle_convention = numpy
-        docstyle_add_select = a b c
-        docstyle_add_ignore = d e f
-        docstyle_match = test_re
-        docstyle_exclude = exclude.py path/to/another/exclude.py
+        [pydocstyle]
+        convention = numpy
+        add-ignore = D100
     """)
-    p = testdir.makepyfile("""
-        def test_ini(request):
-            config = request.config
-            select = ['a', 'b', 'c']
-            assert config.getini('docstyle_add_select') == select
-            ignore = ['d', 'e', 'f']
-            assert config.getini('docstyle_add_ignore') == ignore
-            match = 'test_re'
-            assert config.getini('docstyle_match') == match
-            exclude = ['exclude.py', 'path/to/another/exclude.py']
-            assert config.getini('docstyle_exclude') == exclude
-    """)
+    p = testdir.makepyfile(a='''
+        def hello():
+            """Print hello."""
+            print('hello')
+    ''')
     p = p.write(p.read() + "\n")
     result = testdir.runpytest('--docstyle')
     result.assert_outcomes(passed=1)
@@ -58,19 +48,7 @@ def test_pytest_collect_file(testdir):
     testdir.tmpdir.ensure('c.txt')
     testdir.tmpdir.ensure('test_d.py')
     result = testdir.runpytest('--docstyle')
-    result.assert_outcomes(failed=2)
-
-
-def test_pytest_collect_file_with_exclude(testdir):
-    testdir.makeini("""
-        [pytest]
-        docstyle_exclude = a.py path/**/?.py
-    """)
-    testdir.tmpdir.ensure('a.py')
-    testdir.tmpdir.ensure('b.py')
-    testdir.tmpdir.ensure('path/to/c.py')
-    testdir.tmpdir.ensure('path/to/hoge/foo.py')
-    result = testdir.runpytest('--docstyle')
+    # D100: Missing docstring in public module
     result.assert_outcomes(failed=2)
 
 

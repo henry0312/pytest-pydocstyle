@@ -1,6 +1,6 @@
-import fnmatch
+import contextlib
 import logging
-import re
+import sys
 
 import pydocstyle
 import pytest
@@ -11,43 +11,44 @@ def pytest_addoption(parser):
     group.addoption('--docstyle', action='store_true',
                     default=False, help='run pydocstyle')
 
-    # https://github.com/PyCQA/pydocstyle/blob/2.1.1/src/pydocstyle/config.py#L69
-    DEFAULT_MATCH_RE = pydocstyle.config.ConfigurationParser.DEFAULT_MATCH_RE + '$'
-
-    parser.addini('docstyle_convention', default='pep257',
-                  help='choose the basic list of error codes to be checked (default: pep257)')
-    parser.addini('docstyle_add_select', type='args',
-                  help='add error codes')
-    parser.addini('docstyle_add_ignore', type='args',
-                  help='ignore error codes')
-    parser.addini('docstyle_match', default=DEFAULT_MATCH_RE,
-                  help='check only files that exactly match'
-                       ' regular expression (default: {pattern})'.format(
-                           pattern=DEFAULT_MATCH_RE))
-    parser.addini('docstyle_exclude', type="args",
-                  help='source files to be excluded from codestyle')
-
 
 def pytest_configure(config):
     config.addinivalue_line('markers', 'docstyle: mark tests to be checked by pydocstyle.')
 
 
+# https://github.com/palantir/python-language-server/blob/0.30.0/pyls/plugins/pydocstyle_lint.py#L110
+# LICENSE: https://github.com/palantir/python-language-server/blob/0.30.0/LICENSE
+@contextlib.contextmanager
+def _patch_sys_argv(arguments):
+    old_args = sys.argv
+
+    # Preserve argv[0] since it's the executable
+    sys.argv = old_args[0:1] + arguments
+
+    try:
+        yield
+    finally:
+        sys.argv = old_args
+
+
 def pytest_collect_file(parent, path):
     config = parent.config
-    if (config.getoption('docstyle') and path.ext == '.py' \
-            # https://github.com/PyCQA/pydocstyle/blob/2.1.1/src/pydocstyle/config.py#L163
-            and re.match(config.getini('docstyle_match'), path.basename)):
-        if not any(path.fnmatch(pattern) for pattern in config.getini('docstyle_exclude')):
-            return Item(path, parent)
+    if config.getoption('docstyle') and path.ext == '.py':
+        parser = pydocstyle.config.ConfigurationParser()
+        args = [str(path.basename)]
+        with _patch_sys_argv(args):
+            parser.parse()
+        for filename, _, _ in parser.get_files_to_check():
+            return Item(path, parent, parser)
 
 
 class Item(pytest.Item, pytest.File):
     CACHE_KEY = 'docstyle/mtimes'
 
-    def __init__(self, path, parent):
+    def __init__(self, path, parent, parser):
         super().__init__(path, parent)
         self.add_marker('docstyle')
-
+        self.parser = parser
         # https://github.com/pytest-dev/pytest/blob/92d6a0500b9f528a9adcd6bbcda46ebf9b6baf03/src/_pytest/nodes.py#L380
         # https://github.com/pytest-dev/pytest/blob/92d6a0500b9f528a9adcd6bbcda46ebf9b6baf03/src/_pytest/nodes.py#L101
         # https://github.com/moccu/pytest-isort/blob/44f345560a6125277f7432eaf26a3488c0d39177/pytest_isort.py#L142
@@ -65,12 +66,10 @@ class Item(pytest.Item, pytest.File):
     def runtest(self):
         pydocstyle.utils.log.setLevel(logging.WARN)  # TODO: follow that of pytest
 
-        # https://github.com/PyCQA/pydocstyle/blob/de58b1e596a9c64bcd9e82d9ce1cb8a2aeea1f82/src/pydocstyle/config.py#L444
-        checked_codes = pydocstyle.violations.conventions[self.config.getini('docstyle_convention')]
-        checked_codes |= set(self.config.getini('docstyle_add_select'))
-        checked_codes -= set(self.config.getini('docstyle_add_ignore'))
-
-        errors = [str(error) for error in pydocstyle.check([str(self.fspath)], select=checked_codes, ignore=None)]
+        # https://github.com/PyCQA/pydocstyle/blob/4.0.1/src/pydocstyle/cli.py#L42-L45
+        for filename, checked_codes, ignore_decorators in self.parser.get_files_to_check():
+            errors = [str(error) for error in pydocstyle.check((str(self.fspath),), select=checked_codes,
+                                                               ignore_decorators=ignore_decorators)]
         if errors:
             raise DocStyleError('\n'.join(errors))
         elif hasattr(self.config, 'cache'):
