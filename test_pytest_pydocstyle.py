@@ -1,4 +1,4 @@
-import pytest_docstyle
+import pytest_pydocstyle
 
 # https://docs.pytest.org/en/5.2.2/writing_plugins.html#testing-plugins
 pytest_plugins = ["pytester"]
@@ -7,7 +7,7 @@ pytest_plugins = ["pytester"]
 def test_option_false(testdir):
     p = testdir.makepyfile("""
         def test_option(request):
-            flag = request.config.getoption('docstyle')
+            flag = request.config.getoption('pydocstyle')
             assert flag is False
     """)
     p = p.write(p.read() + "\n")
@@ -18,11 +18,11 @@ def test_option_false(testdir):
 def test_option_true(testdir):
     p = testdir.makepyfile("""
         def test_option(request):
-            flag = request.config.getoption('docstyle')
+            flag = request.config.getoption('pydocstyle')
             assert flag is True
     """)
     p = p.write(p.read() + "\n")
-    result = testdir.runpytest('--docstyle')
+    result = testdir.runpytest('--pydocstyle')
     result.assert_outcomes(passed=1)
 
 
@@ -38,7 +38,7 @@ def test_ini(testdir):
             print('hello')
     ''')
     p = p.write(p.read() + "\n")
-    result = testdir.runpytest('--docstyle')
+    result = testdir.runpytest('--pydocstyle')
     result.assert_outcomes(passed=1)
 
 
@@ -47,7 +47,7 @@ def test_pytest_collect_file(testdir):
     testdir.tmpdir.ensure('b.py')
     testdir.tmpdir.ensure('c.txt')
     testdir.tmpdir.ensure('test_d.py')
-    result = testdir.runpytest('--docstyle')
+    result = testdir.runpytest('--pydocstyle')
     # D100: Missing docstring in public module
     result.assert_outcomes(failed=2)
 
@@ -62,10 +62,10 @@ def test_cache(testdir):
             print('hello')
     ''')
     # first run
-    result = testdir.runpytest('--docstyle')
+    result = testdir.runpytest('--pydocstyle')
     result.assert_outcomes(passed=1, failed=1)
     # second run
-    result = testdir.runpytest('--docstyle')
+    result = testdir.runpytest('--pydocstyle')
     result.assert_outcomes(skipped=1, failed=1)
 
 
@@ -79,10 +79,10 @@ def test_no_cacheprovider(testdir):
             print('hello')
     ''')
     # first run
-    result = testdir.runpytest('--docstyle', '-p', 'no:cacheprovider')
+    result = testdir.runpytest('--pydocstyle', '-p', 'no:cacheprovider')
     result.assert_outcomes(passed=1, failed=1)
     # second run
-    result = testdir.runpytest('--docstyle', '-p', 'no:cacheprovider')
+    result = testdir.runpytest('--pydocstyle', '-p', 'no:cacheprovider')
     result.assert_outcomes(passed=1, failed=1)
 
 
@@ -94,7 +94,7 @@ def test_strict(testdir):
             pass
     ''')
     p = p.write(p.read() + "\n")
-    result = testdir.runpytest('--strict', '--docstyle')
+    result = testdir.runpytest('--strict', '--pydocstyle')
     result.assert_outcomes(passed=1)
 
 
@@ -106,15 +106,15 @@ def test_nodeid(testdir):
             pass
     ''')
     p = p.write(p.read() + "\n")
-    result = testdir.runpytest('-m', 'docstyle', '--docstyle', '-v')
+    result = testdir.runpytest('-m', 'pydocstyle', '--pydocstyle', '-v')
     result.assert_outcomes(passed=1)
-    result.stdout.fnmatch_lines(['nodeid.py::DOCSTYLE PASSED *'])
+    result.stdout.fnmatch_lines(['nodeid.py::PYDOCSTYLE PASSED *'])
 
 
 class TestItem(object):
 
     def test_cache_key(self):
-        assert pytest_docstyle.Item.CACHE_KEY == 'docstyle/mtimes'
+        assert pytest_pydocstyle.Item.CACHE_KEY == 'pydocstyle/mtimes'
 
     def test_init(self):
         pass
@@ -132,7 +132,7 @@ class TestItem(object):
         pass
 
 
-class TestDocStyleError(object):
+class TestPyDocStyleError(object):
 
     def test_subclass(self):
-        assert issubclass(pytest_docstyle.DocStyleError, Exception)
+        assert issubclass(pytest_pydocstyle.PyDocStyleError, Exception)
