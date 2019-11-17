@@ -37,7 +37,7 @@ addopts = --pydocstyle
 ## Licence
 
 The MIT License  
-Copyright (c) 2017 Tsukasa OMOTO
+Copyright (c) 2019 OMOTO Tsukasa
 
 ## Acknowledgments
 
