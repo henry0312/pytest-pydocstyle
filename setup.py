@@ -16,7 +16,7 @@ setup(
     author_email='tsukasa@oomo.to',
     license='MIT',
     py_modules=['pytest_pydocstyle'],
-    python_requires='~=3.5',
+    python_requires='~=3.6',
     install_requires=[
         'pytest~=5.4',
         'pydocstyle',
@@ -40,7 +40,6 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Framework :: Pytest',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',

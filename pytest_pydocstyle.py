@@ -59,9 +59,8 @@ class Item(pytest.Item):
     CACHE_KEY = 'pydocstyle/mtimes'
 
     def __init__(self, name, parent, nodeid, fspath):
-        nodeid += "::PYDOCSTYLE"  # TODO: use f-string
         # https://github.com/pytest-dev/pytest/blob/ee1950af7793624793ee297e5f48b49c8bdf2065/src/_pytest/nodes.py#L544
-        super().__init__(name, parent=parent, nodeid=nodeid)
+        super().__init__(name, parent=parent, nodeid=f"{nodeid}::PYDOCSTYLE")
         self.add_marker('pydocstyle')
 
         # update fspath that was defined as parent.fspath in Node.__init__
