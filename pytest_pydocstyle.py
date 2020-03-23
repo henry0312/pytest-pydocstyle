@@ -1,6 +1,7 @@
 import contextlib
 import logging
 import sys
+import warnings
 
 import pydocstyle
 import pytest
@@ -46,6 +47,9 @@ class Item(pytest.Item, pytest.File):
     CACHE_KEY = 'pydocstyle/mtimes'
 
     def __init__(self, path, parent, parser):
+        warnings.warn("pytest-docstyle is no longer supported. "
+                      "Please switch from pytest-docstyle to pytest-pydocstyle "
+                      "(https://pypi.org/project/pytest-pydocstyle/).", DeprecationWarning)
         super().__init__(path, parent)
         self.add_marker('pydocstyle')
         self.parser = parser
