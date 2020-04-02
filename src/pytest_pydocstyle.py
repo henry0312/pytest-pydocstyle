@@ -42,33 +42,33 @@ def pytest_collect_file(parent, path):
         with _patch_sys_argv(args):
             parser.parse()
         for filename, _, _ in parser.get_files_to_check():
-            # store config parser of pydocstyle
-            parent.config_parser = parser
             # https://github.com/pytest-dev/pytest/blob/ee1950af7793624793ee297e5f48b49c8bdf2065/src/_pytest/nodes.py#L477
-            return File.from_parent(parent=parent, fspath=path)
+            return File.from_parent(parent=parent, fspath=path, config_parser=parser)
 
 
 class File(pytest.File):
 
+    @classmethod
+    def from_parent(cls, parent, fspath, config_parser: pydocstyle.config.ConfigurationParser):
+        _file = super().from_parent(parent=parent, fspath=fspath)
+        # store config parser of pydocstyle
+        _file.config_parser = config_parser
+        return _file
+
     def collect(self):
         # https://github.com/pytest-dev/pytest/blob/ee1950af7793624793ee297e5f48b49c8bdf2065/src/_pytest/nodes.py#L399
-        return [Item.from_parent(name=self.name, parent=self.parent, nodeid=self.nodeid, fspath=self.fspath)]
+        yield Item.from_parent(parent=self, name=self.name, nodeid=self.nodeid)
 
 
 class Item(pytest.Item):
     CACHE_KEY = 'pydocstyle/mtimes'
 
-    def __init__(self, name, parent, nodeid, fspath):
+    def __init__(self, name, parent, nodeid):
         # https://github.com/pytest-dev/pytest/blob/ee1950af7793624793ee297e5f48b49c8bdf2065/src/_pytest/nodes.py#L544
         super().__init__(name, parent=parent, nodeid=f"{nodeid}::PYDOCSTYLE")
         self.add_marker('pydocstyle')
-
-        # update fspath that was defined as parent.fspath in Node.__init__
-        # https://github.com/pytest-dev/pytest/blob/ee1950af7793624793ee297e5f48b49c8bdf2065/src/_pytest/nodes.py#L126
-        self.fspath = fspath
-
         # load config parser of pydocstyle
-        self.parser = parent.config_parser
+        self.parser: pydocstyle.config.ConfigurationParser = self.parent.config_parser
 
     def setup(self):
         if not hasattr(self.config, 'cache'):
