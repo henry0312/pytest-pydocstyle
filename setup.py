@@ -17,14 +17,14 @@ setup(
     license='MIT',
     package_dir={'': 'src'},
     py_modules=['pytest_pydocstyle'],
-    python_requires='~=3.6',
+    python_requires='~=3.7',
     install_requires=[
         'pytest>=5.4',
         'pydocstyle',
     ],
     extras_require={
         'tests': [
-            'pytest-pycodestyle~=2.1',
+            'pytest-pycodestyle~=2.3',
             'pytest-isort',
         ],
     },
