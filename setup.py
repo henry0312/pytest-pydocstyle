@@ -19,7 +19,7 @@ setup(
     py_modules=['pytest_pydocstyle'],
     python_requires='~=3.7',
     install_requires=[
-        'pytest>=5.4',
+        'pytest>=7.0',
         'pydocstyle',
     ],
     extras_require={
