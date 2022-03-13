@@ -3,6 +3,7 @@
 
 import contextlib
 import logging
+import pathlib
 import sys
 
 import pydocstyle
@@ -34,29 +35,34 @@ def _patch_sys_argv(arguments):
         sys.argv = old_args
 
 
-def pytest_collect_file(parent, path):
+def pytest_collect_file(file_path: pathlib.Path, path, parent):
+    """Create a Collector for the given path, or None if not relevant.
+
+    See:
+      - https://docs.pytest.org/en/7.0.x/reference/reference.html#pytest.hookspec.pytest_collect_file
+    """
     config = parent.config
-    if config.getoption('pydocstyle') and path.ext == '.py':
+    if config.getoption('pydocstyle') and file_path.suffix == '.py':
         parser = pydocstyle.config.ConfigurationParser()
-        args = [str(path.basename)]
+        args = [file_path.name]
         with _patch_sys_argv(args):
             parser.parse()
         for filename, _, _ in parser.get_files_to_check():
-            # https://github.com/pytest-dev/pytest/blob/ee1950af7793624793ee297e5f48b49c8bdf2065/src/_pytest/nodes.py#L477
-            return File.from_parent(parent=parent, fspath=path, config_parser=parser)
+            return File.from_parent(parent=parent, path=file_path, config_parser=parser)
 
 
 class File(pytest.File):
 
     @classmethod
-    def from_parent(cls, parent, fspath, config_parser: pydocstyle.config.ConfigurationParser):
-        _file = super().from_parent(parent=parent, fspath=fspath)
+    def from_parent(cls, parent, path: pathlib.Path, config_parser: pydocstyle.config.ConfigurationParser):
+        # https://github.com/pytest-dev/pytest/blob/3e4c14bfaa046bcb5b75903470accf83d93f01ce/src/_pytest/nodes.py#L624
+        _file = super().from_parent(parent=parent, path=path)
         # store config parser of pydocstyle
         _file.config_parser = config_parser
         return _file
 
     def collect(self):
-        # https://github.com/pytest-dev/pytest/blob/ee1950af7793624793ee297e5f48b49c8bdf2065/src/_pytest/nodes.py#L399
+        # https://github.com/pytest-dev/pytest/blob/3e4c14bfaa046bcb5b75903470accf83d93f01ce/src/_pytest/nodes.py#L524
         yield Item.from_parent(parent=self, name=self.name, nodeid=self.nodeid)
 
 
