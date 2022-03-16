@@ -94,7 +94,7 @@ def test_strict(testdir):
             pass
     ''')
     p = p.write(p.read() + "\n")
-    result = testdir.runpytest('--strict', '--pydocstyle')
+    result = testdir.runpytest('--strict-markers', '--pydocstyle')
     result.assert_outcomes(passed=1)
 
 
