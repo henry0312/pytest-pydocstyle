@@ -47,7 +47,7 @@ def pytest_collect_file(file_path: pathlib.Path, path, parent):
         args = [file_path.name]
         with _patch_sys_argv(args):
             parser.parse()
-        for filename, _, _ in parser.get_files_to_check():
+        for filename, *_ in parser.get_files_to_check():
             return File.from_parent(parent=parent, path=file_path, config_parser=parser)
 
 
@@ -89,7 +89,7 @@ class Item(pytest.Item):
         pydocstyle.utils.log.setLevel(logging.WARN)  # TODO: follow that of pytest
 
         # https://github.com/PyCQA/pydocstyle/blob/4.0.1/src/pydocstyle/cli.py#L42-L45
-        for filename, checked_codes, ignore_decorators in self.parser.get_files_to_check():
+        for filename, checked_codes, ignore_decorators, *_ in self.parser.get_files_to_check():
             errors = [str(error) for error in pydocstyle.check((str(self.fspath),), select=checked_codes,
                                                                ignore_decorators=ignore_decorators)]
         if errors:
